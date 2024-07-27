@@ -14,13 +14,16 @@ let brushSize = 5;
 let lines = []; // Array to store lines
 let currentLine = [];
 
+
 canvas.width = window.innerWidth - 20;
 canvas.height = window.innerHeight - 100;
+
 
 window.addEventListener('resize', () => {
     canvas.width = window.innerWidth - 20;
     canvas.height = window.innerHeight - 100;
 });
+
 
 function loadCanvas() {
     const savedData = localStorage.getItem('canvasImage');
@@ -33,10 +36,12 @@ function loadCanvas() {
     }
 }
 
+
 function saveCanvas() {
     const dataURL = canvas.toDataURL();
     localStorage.setItem('canvasImage', dataURL);
 }
+
 
 function updateCanvasState() {
     saveCanvas();
@@ -50,17 +55,9 @@ function getMousePosition(e) {
     };
 }
 
-function getTouchPosition(touch) {
-    const rect = canvas.getBoundingClientRect();
-    return {
-        x: touch.clientX - rect.left,
-        y: touch.clientY - rect.top
-    };
-}
-
 function startDrawing(e) {
     isDrawing = true;
-    const pos = e.type.includes('touch') ? getTouchPosition(e.touches[0]) : getMousePosition(e);
+    const pos = getMousePosition(e);
     currentLine = [{ x: pos.x, y: pos.y }];
     console.log('Start drawing at:', pos.x, pos.y);
 }
@@ -68,7 +65,7 @@ function startDrawing(e) {
 function draw(e) {
     if (!isDrawing) return;
 
-    const pos = e.type.includes('touch') ? getTouchPosition(e.touches[0]) : getMousePosition(e);
+    const pos = getMousePosition(e);
 
     ctx.strokeStyle = brushColor;
     ctx.lineWidth = brushSize;
@@ -123,8 +120,9 @@ function saveCanvasImage() {
     link.click();
 }
 
+
 function updateCrosshair(e) {
-    const pos = e.type.includes('touch') ? getTouchPosition(e.touches[0]) : getMousePosition(e);
+    const pos = getMousePosition(e);
     crosshair.style.left = `${pos.x}px`;
     crosshair.style.top = `${pos.y}px`;
     crosshair.style.backgroundColor = brushColor;
@@ -135,6 +133,7 @@ function hideCrosshair() {
     crosshair.style.display = 'none';
 }
 
+
 function updateBrushColor(color) {
     brushColor = color;
     crosshair.style.backgroundColor = brushColor;
@@ -144,17 +143,6 @@ canvas.addEventListener('mousedown', startDrawing);
 canvas.addEventListener('mousemove', draw);
 canvas.addEventListener('mouseup', endDrawing);
 canvas.addEventListener('mouseleave', endDrawing);
-
-canvas.addEventListener('touchstart', (e) => {
-    startDrawing(e);
-    e.preventDefault();
-});
-canvas.addEventListener('touchmove', (e) => {
-    draw(e);
-    e.preventDefault();
-});
-canvas.addEventListener('touchend', endDrawing);
-canvas.addEventListener('touchcancel', endDrawing);
 
 colorPicker.addEventListener('input', (e) => {
     updateBrushColor(e.target.value);
@@ -175,14 +163,10 @@ eraseBtn.addEventListener('click', eraseLastLine);
 clearBtn.addEventListener('click', clearCanvas);
 saveBtn.addEventListener('click', saveCanvasImage);
 
+
 canvas.addEventListener('mousemove', updateCrosshair);
 canvas.addEventListener('mouseleave', hideCrosshair);
 
-canvas.addEventListener('touchmove', (e) => {
-    updateCrosshair(e);
-    e.preventDefault();
-});
-canvas.addEventListener('touchend', hideCrosshair);
-canvas.addEventListener('touchcancel', hideCrosshair);
 
 loadCanvas();
+
